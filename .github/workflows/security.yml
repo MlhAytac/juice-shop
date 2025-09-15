@@ -19,7 +19,7 @@ jobs:                  # Birden fazla job olabilir
           node-version: '20'       # Kullanılacak Node versiyonu
 
       - name: Install dependencies
-        run: npm ci                # package-lock.json’a göre bağımlılıkları kur
+        run: npm install
 
       - name: Build project
         run: npm run build          # Build komutu (Angular/React vs. olabilir)
