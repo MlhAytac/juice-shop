@@ -35,3 +35,10 @@ jobs:
         continue-on-error: true
         with:
           config: "p/default"  # veya "p/security-audit"
+
+      # 5. GitLeaks taraması (gizli anahtar/şifre arar)
+      - name: Run GitLeaks (no fail on findings)
+        uses: gitleaks/gitleaks-action@v2
+        continue-on-error: true  # bulgu olsa bile job kırmızıya düşmesin
+        with:
+          args: detect --source . --no-banner
