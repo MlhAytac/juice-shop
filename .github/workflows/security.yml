@@ -1,34 +1,37 @@
-name: Build security.yml    # Workflow’un adı
+name: Build Juice Shop
 
-on:                    # Ne zaman çalışacağını belirler
-  push:                # Main brancha push olduğunda çalışsın
-    branches: [ master ]
-  pull_request:        # PR açıldığında da çalışsın
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
 
-jobs:                  # Birden fazla job olabilir
-  build:               # Build adlı job
-    runs-on: ubuntu-latest  # Çalışacağı işletim sistemi (runner)
+jobs:
+  build:
+    runs-on: ubuntu-latest
 
-    steps:             # Bu job içindeki adımlar
-      - name: Checkout code
-        uses: actions/checkout@v4  # Kodu runner’a indirir
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'       # Kullanılacak Node versiyonu
+          node-version: '20' # Juice Shop Node 20 ile uyumlu
 
       - name: Install dependencies
-        run: npm install
+        run: npm install   # <-- package-lock yoksa bu çalışır
 
       - name: Build project
-        run: npm run build          # Build komutu (Angular/React vs. olabilir)
+        run: npm run build
 
-      - name: Run tests (optional)
-        run: npm test               # İstersen test çalıştırabilirsin
+      # İstersen testleri de çalıştırabilirsin
+      - name: Run tests
+        run: npm test
 
-      - name: Upload artifacts (optional)
+      # Build çıktısını artifact olarak yüklemek istersen
+      - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
           name: build-output
-          path: dist/               # Derleme çıktısının olduğu klasör
+          path: dist/   # build çıktısının olduğu klasör
