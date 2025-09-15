@@ -1,44 +1,29 @@
-name: Build and SBOM Juice Shop
+name: Bogazici-DevSecOps-Pipeline
 
 on:
   push:
-    branches: [ master ]
+    branches: 
+    - master 
   pull_request:
-    branches: [ master ]
+    
 
 jobs:
   build-and-sbom:
+    name: Build & SBOM
     runs-on: ubuntu-latest
 
     steps:
       # 1. Reponun kodunu çek
-      - name: Checkout repository
+      - name: Checkout 
         uses: actions/checkout@v4
 
-      # 2. Node.js ortamını kur
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - name: Build Docker image
+        run: 
+          docker build -t juice-shop:${{ github.sha }} .
+
+      - name: Syft SBOM Scan
+        uses: anchore/sbom-action@v0
         with:
-          node-version: '20'   # Juice Shop Node 20 ile uyumlu
-
-      # 3. Bağımlılıkları yükle
-      - name: Install dependencies
-        run: npm install       # package-lock yoksa ci yerine install
-
-      # 4. Projeyi build et
-      - name: Build Juice Shop
-        run: npm run build
-
-      # 5. Syft ile SBOM oluştur
-      - name: Generate SBOM with Syft
-        uses: anchore/sbom-action@v0.15.9
-        with:
-          path: .               # SBOM çıkarılacak dizin
-          output-file: sbom.json # Çıkacak dosya adı (JSON veya SPDX vb.)
-
-      # 6. SBOM dosyasını artefact olarak yükle (indirilebilir hale gelir)
-      - name: Upload SBOM artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: juice-shop-sbom
-          path: sbom.json
+          image: "juice-shop:${{ github.sha}}"
+          output-file: "sbom.spdx.json"
+          format: "spdx-json"
