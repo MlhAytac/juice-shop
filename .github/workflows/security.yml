@@ -2,23 +2,26 @@ name: Bogazici-DevSecOps-Pipeline
 
 on:
   push:
-    branches: 
-      - master 
+    branches:
+      - master
   pull_request:
 
 jobs:
-  build-and-sbom:
-    name: Build & SBOM
+  security-pipeline:
     runs-on: ubuntu-latest
+    name: Build image & security scan
 
     steps:
-      - name: Checkout 
+      # 1. Kodu çek
+      - name: Checkout
         uses: actions/checkout@v4
 
+      # 2. Docker imajını build et
       - name: Build Docker image
         run: |
           docker build -t juice-shop:${{ github.sha }} .
 
+      # 3. Syft ile SBOM çıkar
       - name: Syft SBOM Scan
         uses: anchore/sbom-action@v0
         with:
@@ -26,9 +29,9 @@ jobs:
           output-file: "sbom.spdx.json"
           format: "spdx-json"
 
-      - name: Run Semgrep (do not fail on findings)
+      # 4. Semgrep taraması (bulgu olsa bile pipeline kırılmasın)
+      - name: Run Semgrep (no fail on findings)
         uses: semgrep/semgrep-action@v1
-        continue-on-error: true          # 🔴 bu satır sayesinde bulgular pipeline’ı kırmaz
+        continue-on-error: true
         with:
-          config: "p/default"            # veya "p/security-audit"
-
+          config: "p/default"  # veya "p/security-audit"
