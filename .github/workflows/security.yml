@@ -3,9 +3,8 @@ name: Bogazici-DevSecOps-Pipeline
 on:
   push:
     branches: 
-    - master 
+      - master 
   pull_request:
-    
 
 jobs:
   build-and-sbom:
@@ -13,23 +12,21 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Reponun kodunu çek
       - name: Checkout 
         uses: actions/checkout@v4
 
       - name: Build Docker image
-        run: 
+        run: |
           docker build -t juice-shop:${{ github.sha }} .
 
       - name: Syft SBOM Scan
         uses: anchore/sbom-action@v0
         with:
-          image: "juice-shop:${{ github.sha}}"
+          image: "juice-shop:${{ github.sha }}"
           output-file: "sbom.spdx.json"
           format: "spdx-json"
 
       - name: Run Semgrep
-          uses: semgrep/semgrep-action@v1
-          with:
-            config: "p/default"   # varsayılan kurallar, OWASP Juice Shop için gayet uygun
-
+        uses: semgrep/semgrep-action@v1
+        with:
+          config: "p/default"
