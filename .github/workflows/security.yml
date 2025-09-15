@@ -27,3 +27,9 @@ jobs:
           image: "juice-shop:${{ github.sha}}"
           output-file: "sbom.spdx.json"
           format: "spdx-json"
+
+      - name: Run Semgrep
+          uses: semgrep/semgrep-action@v1
+          with:
+            config: "p/default"   # varsayılan kurallar, OWASP Juice Shop için gayet uygun
+
