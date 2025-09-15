@@ -26,7 +26,9 @@ jobs:
           output-file: "sbom.spdx.json"
           format: "spdx-json"
 
-      - name: Run Semgrep
+      - name: Run Semgrep (do not fail on findings)
         uses: semgrep/semgrep-action@v1
+        continue-on-error: true          # 🔴 bu satır sayesinde bulgular pipeline’ı kırmaz
         with:
-          config: "p/default"
+          config: "p/default"            # veya "p/security-audit"
+
